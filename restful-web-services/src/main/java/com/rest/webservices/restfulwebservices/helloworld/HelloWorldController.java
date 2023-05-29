@@ -1,30 +1,30 @@
 /*
-O código fornecido é um exemplo de um controlador em uma aplicação Java com o framework Spring Boot,
-que implementa uma API REST simples. Vamos analisar o código passo a passo:
+O código fornecido é um exemplo de um controlador em uma
+aplicação Java com o framework Spring Boot que implementa uma
+API REST simples com duas rotas.
 
-1. A primeira linha de código importa as dependências necessárias para o controlador.
+1. A anotação `@RestController` é usada para marcar a classe
+`HelloWorldController` como um controlador REST, indicando que os métodos
+nessa classe irão retornar dados que serão serializados como resposta HTTP.
 
-2. A anotação `@RestController` é usada para marcar a classe `HelloWorldController`
-como um controlador REST. Essa anotação combina as anotações `@Controller` e `@ResponseBody`,
-indicando que os métodos nessa classe irão retornar diretamente dados que serão serializados como resposta HTTP.
+2. A classe `HelloWorldController` contém dois métodos mapeados para
+diferentes URLs usando a anotação `@GetMapping`.
 
-3. O método `helloWorld()` é mapeado para a URL `/hello-world` e será invocado quando uma
-solicitação HTTP GET for feita para essa URL.
+3. O método `helloWorld()` é mapeado para a URL `/hello-world` e será
+invocado quando uma solicitação HTTP GET for feita para essa URL. Ele retorna uma string "Hello World".
 
-4. A anotação @RequestMapping foi substituída pela anotação @GetMapping.
-Ambas as anotações são usadas para mapear um método para uma URL específica,
-mas a @GetMapping é uma forma mais específica da @RequestMapping para mapear
-solicitações HTTP GET. Com isso, não é mais necessário especificar o método HTTP na anotação.
+4. O método `helloWorldBean()` é mapeado para a URL `/hello-world-bean`
+e também será invocado quando uma solicitação HTTP GET for feita para essa
+URL. Ele retorna um objeto `HelloWorldBean` que contém uma mensagem "Hello World".
 
-A anotação @RequestMapping(method = RequestMethod.GET) foi
-substituída apenas por @GetMapping. Essa mudança torna o código mais simples e legível
+5. A classe `HelloWorldBean` é uma classe simples que representa um objeto
+ com uma mensagem. Neste exemplo, ele possui um construtor que recebe a
+  mensagem como parâmetro e um método getter para obter a mensagem.
 
-5. O método `helloWorld()` retorna a string "Hello World". Essa string será serializada e
-enviada como resposta HTTP para o cliente que fez a solicitação.
-
-Resumindo, o código define um controlador REST simples que responde a uma solicitação GET
-na URL `/hello-world` com a string "Hello World". Quando essa URL é acessada, o método `helloWorld()`
-é chamado e a string é retornada como resposta HTTP.
+Resumindo, o código define um controlador REST que responde a duas solicitações
+GET em diferentes URLs. Uma rota `/hello-world` retorna uma string "Hello World"
+diretamente como resposta HTTP, enquanto a rota `/hello-world-bean` retorna um objeto
+`HelloWorldBean` serializado em formato JSON contendo a mensagem "Hello World".
 */
 
 package com.rest.webservices.restfulwebservices.helloworld;
@@ -39,5 +39,10 @@ public class HelloWorldController {
     @GetMapping(path = "/hello-world")
     public String helloWorld() {
         return "Hello World";
+    }
+
+    @GetMapping(path = "/hello-world-bean")
+    public HelloWorldBean helloWorldBean() {
+        return new HelloWorldBean("Hello World");
     }
 }

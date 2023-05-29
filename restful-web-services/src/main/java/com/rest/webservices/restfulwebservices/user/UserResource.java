@@ -53,7 +53,15 @@ public class UserResource {
     // Get /users/pathVariable
     @GetMapping("/users/{id}")
     public User retrieveUser(@PathVariable int id) {
-        return service.findOne(id);
+        User user = service.findOne(id);
+
+        // Se o usuário não for encontrado (ou seja, se o valor retornado for null),
+        // uma exceção UserNotFoundException é lançada. Essa exceção personalizada indica
+        // que o usuário com o ID fornecido não foi encontrado.
+        // A mensagem de exceção é construída concatenando a string "id:" com o valor do ID.
+        if (user == null) throw new UserNotFoundException("id:" + id);
+
+        return user;
     }
 
     /*

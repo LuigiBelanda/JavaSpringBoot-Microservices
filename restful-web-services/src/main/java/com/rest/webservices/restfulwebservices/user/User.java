@@ -1,70 +1,65 @@
-/*
-A classe `User` é uma classe simples que representa um usuário em um sistema.
-Vamos analisar o código e explicar suas funcionalidades:
-
-1. A classe `User` possui três campos privados: `id` (do tipo `Integer`),
-`name` (do tipo `String`) e `birthDate` (do tipo `LocalDate`). Esses campos
-representam o ID, o nome e a data de nascimento do usuário, respectivamente.
-
-2. O construtor `User(Integer id, String name, LocalDate birthDate)` é utilizado
-para criar uma instância da classe `User` e definir os valores do ID,
-nome e data de nascimento.
-
-3. Os métodos getters e setters são usados para acessar e modificar os
-valores dos campos `id`, `name` e `birthDate`.
-
-4. O método `toString()` é sobrescrito para fornecer uma representação em
-string do objeto `User`. Nesse caso, ele retorna uma string que contém o
-nome da classe e os valores dos campos `id`, `name` e `birthDate`.
-
-Resumindo, a classe `User` é um modelo de dados que representa um usuário
-com suas informações básicas, como ID, nome e data de nascimento. Ela fornece
-métodos para acessar e modificar essas informações, além de ter uma implementação
-personalizada do método `toString()` para facilitar a representação em string do
-objeto. Essa classe pode ser usada em conjunto com outras classes e componentes
-para manipular dados de usuário em um sistema.
-*/
-
 package com.rest.webservices.restfulwebservices.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+/*
+A anotação @Entity(name = "user_details") é usada para indicar que a classe
+User é uma entidade que deve ser persistida em um banco de dados. Vamos analisar cada detalhe:
+
+@Entity: Essa anotação marca a classe User como uma entidade, o que significa
+que ela representa uma tabela no banco de dados. A classe deve estar mapeada
+corretamente para que o framework de persistência (como o Hibernate) possa gerenciar
+a persistência dos objetos.
+
+name = "user_details": Este parâmetro opcional permite especificar o nome da tabela no
+banco de dados associada a essa entidade. No exemplo, a tabela correspondente será nomeada
+como "user_details".
+
+A partir dessa anotação, o framework de persistência pode criar e atualizar a tabela no
+banco de dados de acordo com a estrutura definida na classe User. Além disso, ele também
+permite que consultas sejam realizadas na tabela usando operações CRUD (criar, ler, atualizar
+e deletar) de forma simplificada.
+*/
+
+@Entity(name = "user_details")
 public class User {
+    /*
+    Outros elementos presentes na classe User incluem:
+
+    @Id e @GeneratedValue: Essas anotações são usadas em conjunto para indicar que o campo id
+    é a chave primária da entidade e que seu valor deve ser gerado automaticamente pelo
+    sistema (geralmente usando uma estratégia de autoincremento no banco de dados).
+
+    @Size(min = 2, message = "Name should have at least 2 characters"): Essa anotação valida
+    o tamanho mínimo da string no campo name. Se o valor do campo não atender ao requisito
+    mínimo, uma mensagem de erro personalizada será exibida.
+
+    @Past(message = "Birth Date should be in the past"): Essa anotação valida se a data
+    no campo birthDate é anterior à data atual. Se a data fornecida estiver no futuro,
+    uma mensagem de erro personalizada será exibida.
+
+    Essas anotações de validação são parte do mecanismo de validação fornecido pelo Spring
+    Framework. Elas são úteis para garantir que os dados inseridos ou atualizados na entidade
+    atendam a determinadas regras de validação antes de serem persistidos no banco de dados.
+    */
+    @Id
+    @GeneratedValue
     private Integer id;
+
     @Size(min = 2, message = "Name should have at least 2 characters")
     @JsonProperty("user_name")
     private String name;
+
     @Past(message = "Birth Data should be in the past")
     @JsonProperty("birth_date")
     private LocalDate birthDate;
-
-    /*
-    As anotações `@Size` e `@Past` são anotações de validação utilizadas para impor
-    restrições nos campos da classe. Vamos analisar cada uma delas:
-
-    1. `@Size(min = 2, message = "Name should have at least 2 characters")`:
-    Essa anotação é utilizada para validar o tamanho de uma string. No exemplo,
-    ela é aplicada ao campo `name` e define que o tamanho mínimo dessa string
-    deve ser 2 caracteres. Se o valor do campo `name` tiver menos de 2 caracteres,
-    será lançada uma exceção de validação com a mensagem definida no parâmetro `message`.
-
-    2. `@Past(message = "Birth Date should be in the past")`: Essa anotação é
-    utilizada para validar uma data e assegurar que ela esteja no passado. No
-    exemplo, ela é aplicada ao campo `birthDate` e define que a data deve ser
-    anterior à data atual. Se o valor do campo `birthDate` for uma data futura,
-    será lançada uma exceção de validação com a mensagem definida no parâmetro `message`.
-
-    Essas anotações são parte do mecanismo de validação do Spring Framework e
-    são usadas em conjunto com o `@Valid` nas classes de entidade para garantir
-    que os dados atendam a determinadas regras de validação antes de serem processados.
-    Ao aplicar essas anotações, o Spring realiza automaticamente a validação dos
-    campos com base nas regras definidas, facilitando a implementação de lógica de
-    validação nas classes da aplicação.
-    */
 
     public User(Integer id, String name, LocalDate birthDate) {
         this.id = id;

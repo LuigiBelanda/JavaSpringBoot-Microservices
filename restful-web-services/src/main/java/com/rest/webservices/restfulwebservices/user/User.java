@@ -27,12 +27,41 @@ para manipular dados de usuário em um sistema.
 
 package com.rest.webservices.restfulwebservices.user;
 
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 
 public class User {
     private Integer id;
+    @Size(min = 2, message = "Name should have at least 2 characters")
     private String name;
+    @Past(message = "Birth Data should be in the past")
     private LocalDate birthDate;
+
+    /*
+    As anotações `@Size` e `@Past` são anotações de validação utilizadas para impor
+    restrições nos campos da classe. Vamos analisar cada uma delas:
+
+    1. `@Size(min = 2, message = "Name should have at least 2 characters")`:
+    Essa anotação é utilizada para validar o tamanho de uma string. No exemplo,
+    ela é aplicada ao campo `name` e define que o tamanho mínimo dessa string
+    deve ser 2 caracteres. Se o valor do campo `name` tiver menos de 2 caracteres,
+    será lançada uma exceção de validação com a mensagem definida no parâmetro `message`.
+
+    2. `@Past(message = "Birth Date should be in the past")`: Essa anotação é
+    utilizada para validar uma data e assegurar que ela esteja no passado. No
+    exemplo, ela é aplicada ao campo `birthDate` e define que a data deve ser
+    anterior à data atual. Se o valor do campo `birthDate` for uma data futura,
+    será lançada uma exceção de validação com a mensagem definida no parâmetro `message`.
+
+    Essas anotações são parte do mecanismo de validação do Spring Framework e
+    são usadas em conjunto com o `@Valid` nas classes de entidade para garantir
+    que os dados atendam a determinadas regras de validação antes de serem processados.
+    Ao aplicar essas anotações, o Spring realiza automaticamente a validação dos
+    campos com base nas regras definidas, facilitando a implementação de lógica de
+    validação nas classes da aplicação.
+    */
 
     public User(Integer id, String name, LocalDate birthDate) {
         this.id = id;

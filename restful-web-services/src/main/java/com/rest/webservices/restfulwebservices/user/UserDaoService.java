@@ -64,4 +64,30 @@ public class UserDaoService {
         users.add(user);
         return user;
     }
+
+    /*
+    O trecho de código fornecido mostra um método chamado `deleteById` em uma
+    classe relacionada a usuários. Vamos analisar o código e explicar suas funcionalidades:
+
+    1. O método `deleteById` recebe um parâmetro `id` do tipo `int`, que representa
+    o ID do usuário a ser excluído.
+
+    2. O método usa uma expressão lambda e a interface funcional `Predicate` para
+    criar uma condição que verifica se o ID de um usuário é igual ao `id` fornecido.
+    Isso é feito no trecho de código: `user -> user.getId().equals(id)`. O `user` é
+    um objeto `User` e `user.getId()` é usado para obter o ID desse usuário. O método
+    `equals()` é usado para comparar se o ID é igual ao `id` fornecido.
+
+    3. Em seguida, o método `removeIf()` é chamado na lista `users`. Esse método remove
+    todos os elementos que atendem à condição especificada pela expressão lambda. No caso,
+    todos os usuários cujo ID seja igual ao `id` fornecido serão removidos da lista `users`.
+
+    Resumindo, o método `deleteById` é responsável por excluir um usuário com base no seu
+    ID. Ele percorre a lista de usuários e remove o usuário que possui o ID igual ao ID
+    fornecido como parâmetro. Após a execução desse método, o usuário será removido da lista `users`.
+    */
+    public void deleteById(int id) {
+        Predicate<? super User> predicate = user -> user.getId().equals(id);
+        users.removeIf(predicate);
+    }
 }

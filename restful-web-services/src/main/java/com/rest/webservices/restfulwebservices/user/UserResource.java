@@ -29,7 +29,11 @@ em URLs específicas, retornando listas de usuários ou usuários individuais, d
 
 package com.rest.webservices.restfulwebservices.user;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
 import jakarta.validation.Valid;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -51,9 +55,39 @@ public class UserResource {
         return service.findAll();
     }
 
-    // Get /users/pathVariable
+    /*
+    Nesse código, temos um método mapeado para a URL "/users/{id}" que retorna um objeto do tipo
+    `EntityModel<User>`. Vamos explicar o funcionamento passo a passo:
+
+    1. O método recebe um parâmetro `id` do tipo `int`, que representa o ID do usuário a ser recuperado.
+
+    2. O método chama o método `findOne(id)` do serviço `service` para obter o usuário com o ID fornecido.
+
+    3. Se o usuário não for encontrado (ou seja, se o valor retornado for `null`), é
+    lançada uma exceção `UserNotFoundException`. Essa exceção é personalizada e indica que
+    o usuário com o ID fornecido não foi encontrado. A mensagem de exceção é construída
+    concatenando a string "id:" com o valor do ID.
+
+    4. Caso o usuário seja encontrado, um objeto `EntityModel<User>` é criado usando o método
+    estático `of(user)` da classe `EntityModel`. O objeto `EntityModel` é uma classe do Spring
+    HATEOAS que encapsula o usuário e fornece recursos adicionais de hipermídia.
+
+    5. Em seguida, é criado um link para o método `retrieveAllUsers()` desta classe usando o
+    método `linkTo(methodOn(this.getClass()).retrieveAllUsers())` da classe `WebMvcLinkBuilder`.
+    O link é adicionado ao objeto `entityModel` com o nome de relacionamento "all-users".
+
+    6. Por fim, o objeto `entityModel`, que contém o usuário e o link, é retornado como a
+    resposta da requisição.
+
+    Em resumo, esse método recupera um usuário com base no ID fornecido e retorna um objeto
+    `EntityModel<User>` contendo o usuário e um link para recuperar todos os usuários. Caso
+    o usuário não seja encontrado, uma exceção `UserNotFoundException` é lançada. Essa
+    abordagem permite a inclusão de informações adicionais no resultado da resposta, como
+    links para outros recursos relacionados, seguindo o princípio HATEOAS (Hypermedia as
+    the Engine of Application State).
+    */
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id) {
+    public EntityModel<User> retrieveUser(@PathVariable int id) {
         User user = service.findOne(id);
 
         // Se o usuário não for encontrado (ou seja, se o valor retornado for null),
@@ -62,7 +96,11 @@ public class UserResource {
         // A mensagem de exceção é construída concatenando a string "id:" com o valor do ID.
         if (user == null) throw new UserNotFoundException("id:" + id);
 
-        return user;
+        EntityModel<User> entityModel = EntityModel.of(user);
+        WebMvcLinkBuilder link = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+        entityModel.add(link.withRel("all-users"));
+
+        return entityModel;
     }
 
     /*

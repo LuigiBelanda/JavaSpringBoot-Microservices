@@ -1,30 +1,31 @@
 /*
-A classe `VersioningPersonController` é um controlador Spring Boot que implementa a versão de
-API baseada em URL. Vamos analisar o código passo a passo:
+A classe `VersioningPersonController` é um controlador Spring Boot que implementa diferentes
+estratégias de versionamento de API. Vamos analisar o código e explicar cada estratégia:
 
-1. `@RestController`: Essa anotação marca a classe `VersioningPersonController` como um
-controlador REST, indicando que os métodos nessa classe irão responder a solicitações HTTP.
+1. Versionamento baseado em URL:
+   - O método `getFirstVersionOfPerson()` é mapeado para a URL "/v1/person" e retorna uma instância de `PersonV1`.
+   - O método `getSecondVersionOfPerson()` é mapeado para a URL "/v2/person" e retorna uma instância de `PersonV2`.
+   - Essa abordagem permite que os clientes acessem versões específicas da API fornecendo a versão desejada na URL.
 
-2. `@GetMapping("/v1/person")`: Essa anotação mapeia o método `getFirstVersionOfPerson()`
-para a URL "/v1/person". Isso significa que quando uma solicitação GET é feita para "/v1/person",
-esse método será invocado.
+2. Versionamento baseado em parâmetro de solicitação:
+   - O método `getFirstVersionOfPersonRequestParameter()` é mapeado para a URL "/person" com o parâmetro "version=1" e retorna uma instância de `PersonV1`.
+   - O método `getSecondVersionOfPersonRequestParameter()` é mapeado para a URL "/person" com o parâmetro "version=2" e retorna uma instância de `PersonV2`.
+   - Essa abordagem permite que os clientes acessem versões específicas da API fornecendo o parâmetro "version" na solicitação.
 
-3. O método `getFirstVersionOfPerson()` retorna um objeto `PersonV1`. Essa versão de pessoa
-tem apenas um atributo de nome representado como uma única string.
+3. Versionamento baseado em cabeçalho de solicitação:
+   - O método `getFirstVersionOfPersonRequestHeader()` é mapeado para a URL "/person/header" com o cabeçalho "X-API-VERSION=1" e retorna uma instância de `PersonV1`.
+   - O método `getSecondVersionOfPersonRequestHeader()` é mapeado para a URL "/person/header" com o cabeçalho "X-API-VERSION=2" e retorna uma instância de `PersonV2`.
+   - Essa abordagem permite que os clientes acessem versões específicas da API fornecendo o cabeçalho "X-API-VERSION" na solicitação.
 
-4. `@GetMapping("/v2/person")`: Essa anotação mapeia o método `getSecondVersionOfPerson()`
-para a URL "/v2/person". Isso significa que quando uma solicitação GET é feita para "/v2/person",
-esse método será invocado.
+4. Versionamento baseado em cabeçalho "Accept":
+   - O método `getFirstVersionOfPersonAcceptHeader()` é mapeado para a URL "/person/accept" com o cabeçalho "Accept" definido como "application/vnd.company.app-v1+json" e retorna uma instância de `PersonV1`.
+   - O método `getSecondVersionOfPersonAcceptHeader()` é mapeado para a URL "/person/accept" com o cabeçalho "Accept" definido como "application/vnd.company.app-v2+json" e retorna uma instância de `PersonV2`.
+   - Essa abordagem permite que os clientes acessem versões específicas da API fornecendo o cabeçalho "Accept" com um valor personalizado que representa a versão desejada.
 
-5. O método `getSecondVersionOfPerson()` retorna um objeto `PersonV2`. Essa versão de pessoa
-possui um atributo de nome representado como um objeto `Name`, que contém os atributos "firstName"
-e "lastName".
-
-Em resumo, o controlador `VersioningPersonController` define dois endpoints que correspondem a
-diferentes versões da API. A versão 1 retorna uma pessoa com um nome em formato de string simples,
-enquanto a versão 2 retorna uma pessoa com um nome representado como um objeto `Name` com atributos
-separados para o primeiro nome e o sobrenome. Isso permite que os clientes da API acessem a versão
-desejada especificando a versão desejada na URL da solicitação.
+Essas estratégias de versionamento permitem que os desenvolvedores controlem a evolução da API e forneçam
+diferentes versões para atender às necessidades dos clientes sem interromper as versões anteriores.
+Cada abordagem tem suas vantagens e pode ser escolhida com base nos requisitos específicos do projeto
+e nas preferências da equipe de desenvolvimento.
 */
 
 package com.rest.webservices.restfulwebservices.versioning;

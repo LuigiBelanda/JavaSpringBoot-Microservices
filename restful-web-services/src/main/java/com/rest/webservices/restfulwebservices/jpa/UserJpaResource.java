@@ -49,6 +49,7 @@ package com.rest.webservices.restfulwebservices.jpa;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+import com.rest.webservices.restfulwebservices.user.Post;
 import com.rest.webservices.restfulwebservices.user.User;
 import com.rest.webservices.restfulwebservices.user.UserNotFoundException;
 import jakarta.validation.Valid;
@@ -107,5 +108,14 @@ public class UserJpaResource {
     @DeleteMapping("jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
         repository.deleteById(id);
+    }
+
+    @GetMapping("jpa/users/{id}/posts")
+    public List<Post> retrievePostsForUser(@PathVariable int id) {
+        Optional<User> user = repository.findById(id);
+
+        if (user.isEmpty()) throw new UserNotFoundException("id:"+id);
+
+        return user.get().getPosts();
     }
 }

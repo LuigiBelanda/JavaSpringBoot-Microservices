@@ -66,9 +66,11 @@ import java.util.Optional;
 @RestController
 public class UserJpaResource {
     private UserRepository repository;
+    private PostRepository postRepository;
 
-    public UserJpaResource(UserRepository repository) {
+    public UserJpaResource(UserRepository repository, PostRepository postRepository) {
         this.repository = repository;
+        this.postRepository = postRepository;
     }
 
     // Get /users
@@ -117,5 +119,52 @@ public class UserJpaResource {
         if (user.isEmpty()) throw new UserNotFoundException("id:"+id);
 
         return user.get().getPosts();
+    }
+
+    /*
+    O método `createPostForUser` é responsável por criar um novo objeto `Post` associado a um usuário específico com base no ID fornecido na URL.
+
+    - Ele é anotado com `@PostMapping("jpa/users/{id}/posts")`, indicando que é um endpoint que aceita requisições HTTP POST para criar um novo post para um usuário.
+    - O parâmetro `@PathVariable int id` indica que o ID do usuário será extraído da URL.
+    - O parâmetro `@Valid @RequestBody Post post` indica que o corpo da requisição será convertido em um objeto `Post` e validado com base nas anotações de validação presentes na classe `Post`.
+
+    Aqui está o fluxo de execução do método:
+
+    1. O método começa procurando o usuário com o ID fornecido usando o método `findById(id)` do repositório de
+    usuários. Ele retorna um `Optional<User>` que pode conter o usuário encontrado ou estar vazio.
+
+    2. Se o usuário não for encontrado (ou seja, `user.isEmpty()`), uma exceção `UserNotFoundException`
+    é lançada, informando que o usuário com o ID fornecido não foi encontrado.
+
+    3. Caso contrário, se o usuário for encontrado, é atribuído ao objeto `post` usando o método
+    `post.setUser(user.get())`. Isso estabelece a relação many-to-one entre o post e o
+    usuário, definindo o usuário como o autor do post.
+
+    4. O post é então salvo no repositório de posts usando o método `postRepository.save(post)`, que retorna o
+    objeto `Post` salvo com o ID gerado.
+
+    5. Em seguida, é criada uma URI (Uniform Resource Identifier) para o recurso recém-criado usando
+    `ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedPost.getId()).toUri()`.
+    A URI inclui o ID do post salvo.
+
+    6. Finalmente, uma resposta HTTP 201 (Created) é retornada com a URI do recurso recém-criado
+    usando `ResponseEntity.created(location).build()`. Isso indica que a criação do post foi bem-sucedida
+    e inclui o local onde o recurso pode ser acessado.
+    */
+    @PostMapping("jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPostForUser(@PathVariable int id, @Valid @RequestBody Post post) {
+        Optional<User> user = repository.findById(id);
+
+        if (user.isEmpty()) throw new UserNotFoundException("id:"+id);
+
+        post.setUser(user.get());
+        Post savedPost = postRepository.save(post);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPost.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }

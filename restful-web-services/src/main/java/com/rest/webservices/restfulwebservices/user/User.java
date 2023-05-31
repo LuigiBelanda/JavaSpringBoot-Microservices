@@ -1,13 +1,16 @@
 package com.rest.webservices.restfulwebservices.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /*
 A anotação @Entity(name = "user_details") é usada para indicar que a classe
@@ -64,6 +67,26 @@ public class User {
     @Past(message = "Birth Data should be in the past")
     // @JsonProperty("birth_date")
     private LocalDate birthDate;
+
+    /*
+    A anotação @OneToMany é utilizada na JPA (Java Persistence API) para mapear um
+    relacionamento de um para muitos (one-to-many) entre duas entidades em um banco
+    de dados relacional. Nesse caso, a entidade que contém esse código possui uma
+    lista de objetos Post mapeados como um relacionamento de um para muitos com a entidade User.
+
+    O parâmetro mappedBy = "user" indica que o relacionamento é mapeado pelo atributo "user"
+    na entidade Post. Isso significa que o atributo "user" na classe Post está sendo utilizado
+    para mapear a relação com a entidade User.
+
+    Um relacionamento one-to-many (um para muitos) é um tipo de relação entre duas entidades em
+    um modelo de dados, onde uma entidade está associada a várias instâncias de outra entidade.
+    Nesse tipo de relacionamento, uma instância da entidade A pode estar relacionada a várias
+    instâncias da entidade B, mas cada instância da entidade B está associada a apenas uma instância
+    da entidade A.
+    */
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Post> posts;
 
     public User(Integer id, String name, LocalDate birthDate) {
         this.id = id;

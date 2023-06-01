@@ -1,5 +1,6 @@
 package com.microservices.currencyconversionservice;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,9 @@ import java.util.HashMap;
 
 @RestController
 public class CurrencyConversionController {
+    @Autowired
+    private CurrencyExchangeProxy proxy;
+
     /*
     Nesse trecho de código, temos um método `calculateCurrencyConversion` mapeado para o endpoint
     `/currency-conversion/from/{from}/to/{to}/quantity/{quantity}` utilizando a anotação `@GetMapping`.
@@ -38,7 +42,7 @@ public class CurrencyConversionController {
     informações de conversão de moeda, calcula a conversão com base na quantidade fornecida e retorna
     o resultado.
     */
-    @GetMapping("/currency-conversio/from/{from}/to/{to}/quantity/{quantity}")
+    @GetMapping("/currency-conversion/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversion calculateCurrencyConversion(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity) {
         HashMap<String, String> uriVariables = new HashMap<>();
         uriVariables.put("from", from);
@@ -59,7 +63,57 @@ public class CurrencyConversionController {
                 quantity,
                 currencyConversion.getConversionMultiple(),
                 quantity.multiply(currencyConversion.getConversionMultiple()),
-                currencyConversion.getEnvironment()
+                currencyConversion.getEnvironment() + "" + "rest template"
+        );
+    }
+
+    /*
+    Nesse trecho de código, temos um método chamado `calculateCurrencyConversionFeign`, que é
+    mapeado para a rota "/currency-conversion-feign/from/{from}/to/{to}/quantity/{quantity}"
+    usando a anotação `@GetMapping`. Esse método utiliza o cliente Feign chamado `proxy` para
+    buscar as informações de conversão de moeda a partir do serviço "currency-exchange".
+
+    O método recebe três variáveis de caminho (`from`, `to` e `quantity`), que são extraídas da
+    URL e usadas como parâmetros do método.
+
+    Dentro do método, é feita uma chamada ao método `retrieveExchangeValue` do cliente Feign `proxy`,
+    passando as variáveis `from` e `to` como argumentos. Essa chamada faz uma requisição
+    HTTP GET para o endpoint definido no cliente Feign, que por sua vez se comunica com o
+    serviço "currency-exchange" para buscar as informações de conversão de moeda.
+
+    O resultado dessa chamada é armazenado na variável `currencyConversion`, que representa
+    a resposta da chamada ao serviço remoto.
+
+    Em seguida, é criado um novo objeto `CurrencyConversion` com base nos dados obtidos. Esse
+    objeto é retornado como resultado do método.
+
+    No objeto `CurrencyConversion` retornado, os campos `id`, `from`, `to`, `quantity` e
+    `conversionMultiple` são preenchidos com os valores correspondentes da resposta do
+    serviço remoto. Além disso, o campo `totalCalculatedAmount` é calculado multiplicando
+    a quantidade (`quantity`) pelo valor da conversão (`conversionMultiple`).
+
+    Por fim, é adicionada a string "feign" ao campo `environment` do objeto `CurrencyConversion`,
+    concatenando-a com o valor obtido do serviço remoto. Isso serve para indicar que a conversão
+    foi feita utilizando o cliente Feign.
+
+    Resumindo, o método `calculateCurrencyConversionFeign` utiliza o cliente Feign para buscar
+    as informações de conversão de moeda do serviço "currency-exchange" e retorna um objeto
+    `CurrencyConversion` com os valores calculados. O uso do cliente Feign simplifica a
+    comunicação com o serviço remoto, permitindo que a lógica de chamada e tratamento da
+    resposta seja encapsulada em uma interface declarativa.
+    */
+    @GetMapping("/currency-conversion-feign/from/{from}/to/{to}/quantity/{quantity}")
+    public CurrencyConversion calculateCurrencyConversionFeign(@PathVariable String from, @PathVariable String to, @PathVariable BigDecimal quantity) {
+        CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
+
+        return new CurrencyConversion(
+                currencyConversion.getId(),
+                from,
+                to,
+                quantity,
+                currencyConversion.getConversionMultiple(),
+                quantity.multiply(currencyConversion.getConversionMultiple()),
+                currencyConversion.getEnvironment() + "" + "feign"
         );
     }
 }

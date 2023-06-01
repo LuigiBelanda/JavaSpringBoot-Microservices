@@ -10,20 +10,40 @@ import java.math.BigDecimal;
 
 @RestController
 public class CurrencyExchangeController {
-    /*
-    O Environment é uma classe fornecida pelo Spring Framework que permite acessar as propriedades
-    de configuração do ambiente de execução.
+    private CurrencyExchangeRepository repository;
 
-    Em seguida, é obtido o valor da propriedade "local.server.port" do objeto Environment, que representa a porta
-    na qual o aplicativo está sendo executado. Esse valor é adicionado à instância de CurrencyExchange
-    por meio do método setEnvironment.
-    */
     @Autowired
     private Environment environment;
 
+    /*
+    Nesse trecho de código, temos um método `retrieveExchangeValue` mapeado para o endpoint
+    `/currency-exchange/from/{from}/to/{to}` utilizando a anotação `@GetMapping`.
+    Isso significa que esse método será executado quando houver uma requisição HTTP GET para
+    esse endpoint, onde `{from}` e `{to}` são variáveis de caminho (path variables) que serão extraídas da URL.
+
+    Dentro do método, a primeira ação realizada é chamar o método `findByFromAndTo` do
+    repositório `repository` passando os valores das variáveis `from` e `to`. Esse método
+    é responsável por buscar no banco de dados uma instância da entidade `CurrencyExchange`
+    que corresponda aos valores especificados.
+
+    Em seguida, é feita uma verificação para garantir que um objeto `CurrencyExchange`
+    tenha sido encontrado. Caso o objeto seja nulo, é lançada uma exceção `RuntimeException`
+    com uma mensagem informando que os dados para a conversão especificada não foram encontrados.
+
+    Após isso, é obtido o valor da propriedade `local.server.port` do objeto `environment`,
+    que contém informações do ambiente em que a aplicação está sendo executada.
+    Esse valor do número da porta é utilizado para definir o ambiente no objeto `CurrencyExchange` encontrado.
+
+    Por fim, o objeto `CurrencyExchange` é retornado como resposta da requisição, contendo as
+    informações da conversão e o ambiente definido.
+    */
     @GetMapping("/currency-exchange/from/{from}/to/{to}")
     public CurrencyExchange retrieveExchangeValue(@PathVariable String from, @PathVariable String to) {
-        CurrencyExchange currencyExchange = new CurrencyExchange(1000L, from , to, BigDecimal.valueOf(50));
+        CurrencyExchange currencyExchange = repository.findByFromAndTo(from, to);
+
+        if (currencyExchange == null) {
+            throw new RuntimeException("unable to find data for " + from + " to " + to);
+        }
 
         String port = environment.getProperty("local.server.port");
         currencyExchange.setEnvironment(port);

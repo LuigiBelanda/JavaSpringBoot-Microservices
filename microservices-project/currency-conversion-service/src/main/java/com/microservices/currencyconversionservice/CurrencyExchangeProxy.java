@@ -39,6 +39,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.math.BigDecimal;
 
 // @FeignClient(name = "currency-exchange", url = "localhost:8000")
+
+// Neste caso tiramos a prop url acima pois com o naming server (Eureka) conseguimos
+// Ver quais serviços estão no ar e com isso o próprio load balancer que vem com a dependência do
+// Eureka cuida dessa parte e muda de serviço caso necessário e vai distribuindo a carga
 @FeignClient(name = "currency-exchange")
 public interface CurrencyExchangeProxy {
     @GetMapping("/currency-exchange/from/{from}/to/{to}")
